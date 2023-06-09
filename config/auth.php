@@ -112,4 +112,11 @@ return [
 
     'password_timeout' => 10800,
 
+    /* api guard
+*/
+    'api' => [
+        'driver' => 'token',
+        'provider' => 'users',
+        'hash' => false,
+    ],
 ];

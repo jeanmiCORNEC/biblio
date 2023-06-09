@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
+
+    protected $visible = ['id', 'title', 'author', 'description', 'cover_image', 'isbn'];
+    protected $fillable = ['title', 'author', 'description', 'cover_image', 'isbn'];
 }
