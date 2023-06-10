@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'sanctum',
         'passwords' => 'users',
     ],
 
@@ -36,9 +36,19 @@ return [
     */
 
     'guards' => [
+        'sanctum' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+            'hash' => false,
+        ],
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'api' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => false,
         ],
     ],
 
@@ -112,11 +122,5 @@ return [
 
     'password_timeout' => 10800,
 
-    /* api guard
-*/
-    'api' => [
-        'driver' => 'token',
-        'provider' => 'users',
-        'hash' => false,
-    ],
+
 ];

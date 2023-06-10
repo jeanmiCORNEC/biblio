@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\SanctumServiceProvider;
 
 return [
 
@@ -159,6 +160,7 @@ return [
         /*
          * Package Service Providers...
          */
+        SanctumServiceProvider::class,
 
         /*
          * Application Service Providers...
