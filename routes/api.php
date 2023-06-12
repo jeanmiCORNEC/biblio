@@ -16,14 +16,19 @@ use App\Http\Controllers\BookController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
 // routes pour les livres
 Route::apiResource('books', BookController::class);
 
 // routes pour les utilisateurs
-Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
-Route::delete('logout', [AuthController::class, 'logout']);
+Route::post('register', [AuthController::class, 'register'])->name('register');
+Route::post('login', [AuthController::class, 'login'])->name('login');
+
+// routes protégées
+Route::middleware('auth:sanctum')->group(function () {
+    // routes pour les utilisateurs
+    Route::get('users/{id}', [AuthController::class, 'show'])->name('users.show');
+    Route::put('users/{id}', [AuthController::class, 'update'])->name('users.update');
+    Route::delete('users/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+});

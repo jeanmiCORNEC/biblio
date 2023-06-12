@@ -14,9 +14,11 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $utilisateurDonnee = $request->validate([
+
             'name' => 'required|string|min:3|max:255',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed|min:8'
+            'password' => 'required|string|confirmed|min:8',
+            'password_confirmation' => 'required|string|same:password'
         ]);
 
         $utilisateur = User::create([
@@ -63,12 +65,67 @@ class AuthController extends Controller
      */
     public function logout(Request $request): RedirectResponse
     {
-        Auth::logout();
+        $request->user()->currentAccessToken()->delete();
 
-        $request->session()->invalidate();
+        return redirect()->route('/');
+    }
 
-        $request->session()->regenerateToken();
+    public function show($id): JsonResponse
+    {
+        $utilisateur = User::find($id);
 
-        return redirect('/');
+        if (!$utilisateur) {
+            return response()->json([
+                'message' => 'Utilisateur non trouvé'
+            ], 404);
+        }
+
+        return response()->json([
+            'utilisateur' => $utilisateur
+        ], 200);
+    }
+
+    public function update(Request $request, $id): JsonResponse
+    {
+        $utilisateur = User::find($id);
+
+        if (!$utilisateur) {
+            return response()->json([
+                'message' => 'Utilisateur non trouvé'
+            ], 404);
+        }
+
+        $utilisateurDonnee = $request->validate([
+            'name' => 'required|string|min:3|max:255',
+            'email' => 'required|string|email|unique:users,email,' . $utilisateur->id,
+            'password' => 'required|string|confirmed|min:8'
+        ]);
+
+        $utilisateur->name = $utilisateurDonnee['name'];
+        $utilisateur->email = $utilisateurDonnee['email'];
+        $utilisateur->password = Hash::make($utilisateurDonnee['password']);
+        $utilisateur->save();
+
+        return response()->json([
+            'utilisateur' => $utilisateur,
+            'message' => 'Utilisateur mis à jour avec succès'
+        ], 200);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        $utilisateur = User::find($id);
+
+        if (!$utilisateur) {
+            return response()->json([
+                'message' => 'Utilisateur non trouvé'
+            ], 404);
+        }
+
+        $utilisateur->delete();
+
+        return response()->json([
+            'message' => 'Utilisateur supprimé avec succès'
+        ], 200);
     }
 }
