@@ -18,7 +18,8 @@ use App\Http\Controllers\BookController;
 
 
 // routes pour les livres
-Route::apiResource('books', BookController::class);
+Route::get('books', [BookController::class, 'index'])->name('books.index');
+Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
 
 // routes pour les utilisateurs
 Route::post('register', [AuthController::class, 'register'])->name('register');
@@ -31,4 +32,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('users/{id}', [AuthController::class, 'update'])->name('users.update');
     Route::delete('users/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
+
+    // routes pour les livres
+    Route::post('books', [BookController::class, 'store'])->name('books.store');
+    Route::patch('books/{book}', [BookController::class, 'update'])->name('books.update');
+    Route::delete('books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+
+    // routes pour les commentaires
+    Route::post('books/{book}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::patch('books/{book}/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('books/{book}/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
