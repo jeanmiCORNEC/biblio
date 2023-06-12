@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\EbookLink;
+use App\Models\PaperLink;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Book extends Model
 {
@@ -15,13 +17,27 @@ class Book extends Model
         'author',
         'description',
         'cover_image',
-        'isbn'
+        'isbn',
+        'paperLinks',
+        'ebookLinks'
     ];
     protected $fillable = [
         'title',
         'author',
         'description',
         'cover_image',
-        'isbn'
+        'isbn',
+        'paperLinks',
+        'ebookLinks'
     ];
+
+    public function paperLinks()
+    {
+        return $this->hasMany(PaperLink::class);
+    }
+
+    public function ebookLinks()
+    {
+        return $this->hasMany(EbookLink::class);
+    }
 }

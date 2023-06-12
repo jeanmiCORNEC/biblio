@@ -72,7 +72,7 @@ class AuthController extends Controller
 
     public function show($id): JsonResponse
     {
-        $utilisateur = User::find($id);
+        $utilisateur = User::findOrFail($id);
 
         if (!$utilisateur) {
             return response()->json([
@@ -87,7 +87,7 @@ class AuthController extends Controller
 
     public function update(Request $request, $id): JsonResponse
     {
-        $utilisateur = User::find($id);
+        $utilisateur = User::findOrFail($id);
 
         if (!$utilisateur) {
             return response()->json([
@@ -114,7 +114,7 @@ class AuthController extends Controller
 
     public function destroy($id): JsonResponse
     {
-        $utilisateur = User::find($id);
+        $utilisateur = User::findOrFail($id);
 
         if (!$utilisateur) {
             return response()->json([

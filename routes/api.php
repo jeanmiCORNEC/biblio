@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // routes pour les commentaires
     Route::post('books/{book}/comments', [CommentController::class, 'store'])->name('comments.store');
-    Route::patch('books/{book}/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
-    Route::delete('books/{book}/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+    Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
