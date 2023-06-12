@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,16 +32,19 @@ Route::middleware('auth:sanctum')->group(function () {
     // routes pour les utilisateurs
     Route::get('users/{id}', [AuthController::class, 'show'])->name('users.show');
     Route::put('users/{id}', [AuthController::class, 'update'])->name('users.update');
-    Route::delete('users/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
-
-    // routes pour les livres
-    Route::post('books', [BookController::class, 'store'])->name('books.store');
-    Route::patch('books/{book}', [BookController::class, 'update'])->name('books.update');
-    Route::delete('books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    Route::delete('users/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
 
     // routes pour les commentaires
     Route::post('books/{book}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    // partie admin avec son propre middleware
+    Route::middleware('admin')->name('admin.')->prefix('admin')->group(function () {
+        // routes pour les livres
+        Route::post('books', [AdminBookController::class, 'store'])->name('books.store');
+        Route::patch('books/{book}', [AdminBookController::class, 'update'])->name('books.update');
+        Route::delete('books/{book}', [AdminBookController::class, 'destroy'])->name('books.destroy');
+    });
 });

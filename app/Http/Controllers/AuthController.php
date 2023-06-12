@@ -79,10 +79,16 @@ class AuthController extends Controller
                 'message' => 'Utilisateur non trouvé'
             ], 404);
         }
+        $utilisateurCourant = Auth::user();
+        if ($utilisateur->id === $utilisateurCourant->id || $utilisateurCourant->is_admin === 1) {
+            return response()->json([
+                'utilisateur' => $utilisateur
+            ], 200);
+        }
 
         return response()->json([
-            'utilisateur' => $utilisateur
-        ], 200);
+            'message' => 'Vous n\'avez pas l\'autorisation de voir cet utilisateur'
+        ], 403);
     }
 
     public function update(Request $request, $id): JsonResponse
@@ -94,22 +100,30 @@ class AuthController extends Controller
                 'message' => 'Utilisateur non trouvé'
             ], 404);
         }
+        $utilisateurtCourant = Auth::user();
+        if ($utilisateur->id === $utilisateurtCourant->id || $utilisateurtCourant->is_admin === 1) {
 
-        $utilisateurDonnee = $request->validate([
-            'name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|email|unique:users,email,' . $utilisateur->id,
-            'password' => 'required|string|confirmed|min:8'
-        ]);
 
-        $utilisateur->name = $utilisateurDonnee['name'];
-        $utilisateur->email = $utilisateurDonnee['email'];
-        $utilisateur->password = Hash::make($utilisateurDonnee['password']);
-        $utilisateur->save();
+            $utilisateurDonnee = $request->validate([
+                'name' => 'required|string|min:3|max:255',
+                'email' => 'required|string|email|unique:users,email,' . $utilisateur->id,
+                'password' => 'required|string|confirmed|min:8'
+            ]);
+
+            $utilisateur->name = $utilisateurDonnee['name'];
+            $utilisateur->email = $utilisateurDonnee['email'];
+            $utilisateur->password = Hash::make($utilisateurDonnee['password']);
+            $utilisateur->save();
+
+            return response()->json([
+                'utilisateur' => $utilisateur,
+                'message' => 'Utilisateur mis à jour avec succès'
+            ], 200);
+        }
 
         return response()->json([
-            'utilisateur' => $utilisateur,
-            'message' => 'Utilisateur mis à jour avec succès'
-        ], 200);
+            'message' => 'Vous n\'avez pas l\'autorisation de mettre à jour cet utilisateur'
+        ], 403);
     }
 
     public function destroy($id): JsonResponse
@@ -121,11 +135,17 @@ class AuthController extends Controller
                 'message' => 'Utilisateur non trouvé'
             ], 404);
         }
+        $utilisateurCourant = Auth::user();
+        if ($utilisateur->id === $utilisateurCourant->id || $utilisateurCourant->is_admin === 1) {
+            $utilisateur->delete();
 
-        $utilisateur->delete();
+            return response()->json([
+                'message' => 'Utilisateur supprimé avec succès'
+            ], 200);
+        }
 
         return response()->json([
-            'message' => 'Utilisateur supprimé avec succès'
-        ], 200);
+            'message' => 'Vous n\'avez pas l\'autorisation de supprimer cet utilisateur'
+        ], 403);
     }
 }
