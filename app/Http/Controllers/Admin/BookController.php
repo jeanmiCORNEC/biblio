@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Book;
+use App\Models\EbookLink;
+use App\Models\PaperLink;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
@@ -20,10 +22,28 @@ class BookController extends Controller
             'paperLinks' => 'array|nullable',
             'paperLinks.*.link' => 'string|min:5|max:255',
             'ebookLinks' => 'array|nullable',
-            'ebookLinks.*.link' => 'string|min:5|max:255',
+            'ebookLinks.*.link' => 'string|min:5|max:255'
         ]);
 
-        $book = Book::create($donneesValidees);
+        $bookData = $donneesValidees;
+        unset($bookData['paperLinks']);
+        unset($bookData['ebookLinks']);
+
+        $book = Book::create($bookData);
+
+        foreach ($donneesValidees['paperLinks'] as $paperLink) {
+            PaperLink::create([
+                'book_id' => $book->id,
+                'link' => $paperLink['link']
+            ]);
+        }
+
+        foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
+            EbookLink::create([
+                'book_id' => $book->id,
+                'link' => $ebookLink['link']
+            ]);
+        }
 
         return response()->json($book, 201);
     }
@@ -36,10 +56,35 @@ class BookController extends Controller
             'description' => 'required|string|min:10|max:500',
             'cover_image' => 'required|string|min:5|max:255',
             'isbn' => 'string|min:5|max:50',
+            'paperLinks' => 'array|nullable',
+            'paperLinks.*.link' => 'string|min:5|max:255',
+            'ebookLinks' => 'array|nullable',
+            'ebookLinks.*.link' => 'string|min:5|max:255'
         ]);
         $bookId = $book->id;
         $book = Book::findOrFail($bookId);
-        $book->update($donneesValidees);
+
+        $bookData = $donneesValidees;
+        unset($bookData['paperLinks']);
+        unset($bookData['ebookLinks']);
+
+        $book->update($bookData);
+
+        PaperLink::where('book_id', $book->id)->delete();
+        foreach ($donneesValidees['paperLinks'] as $paperLink) {
+            PaperLink::create([
+                'book_id' => $book->id,
+                'link' => $paperLink['link']
+            ]);
+        }
+
+        EbookLink::where('book_id', $book->id)->delete();
+        foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
+            EbookLink::create([
+                'book_id' => $book->id,
+                'link' => $ebookLink['link']
+            ]);
+        }
 
         return response()->json($book, 200);
     }
