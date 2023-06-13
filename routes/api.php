@@ -4,9 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\Admin\BookController as AdminBookController;
 use App\Http\Controllers\CitationController;
+use App\Http\Controllers\Admin\BookController as AdminBookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,11 @@ Route::get('books/{book}', [BookController::class, 'show'])->name('books.show');
 // routes pour les utilisateurs
 Route::post('register', [AuthController::class, 'register'])->name('register');
 Route::post('login', [AuthController::class, 'login'])->name('login');
+
+// route pour les articles
+Route::get('posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('posts/{post}', [PostController::class, 'show'])->name('post.show');
+
 
 // routes protégées
 Route::middleware('auth:sanctum')->group(function () {
@@ -54,5 +60,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('citations/{citation}', [CitationController::class, 'show'])->name('citations.show');
         Route::patch('citations/{citation}', [CitationController::class, 'update'])->name('citations.update');
         Route::delete('citations/{citation}', [CitationController::class, 'destroy'])->name('citations.destroy');
+
+        // routes pour les articles
+        Route::post('posts', [PostController::class, 'store'])->name('posts.store');
+        Route::patch('posts/{post}', [PostController::class, 'update'])->name('posts.update');
+        Route::delete('posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
     });
 });
