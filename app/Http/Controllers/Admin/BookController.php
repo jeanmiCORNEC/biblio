@@ -22,7 +22,7 @@ class BookController extends Controller
             'paperLinks' => 'array|nullable',
             'paperLinks.*.link' => 'string|min:5|max:255',
             'ebookLinks' => 'array|nullable',
-            'ebookLinks.*.link' => 'string|min:5|max:255'
+            'ebookLinks.*.link' => 'string|min:5|max:255',
         ]);
 
         $bookData = $donneesValidees;
@@ -31,18 +31,22 @@ class BookController extends Controller
 
         $book = Book::create($bookData);
 
-        foreach ($donneesValidees['paperLinks'] as $paperLink) {
-            PaperLink::create([
-                'book_id' => $book->id,
-                'link' => $paperLink['link']
-            ]);
+        if (isset($donneesValidees['paperLinks'])) {
+            foreach ($donneesValidees['paperLinks'] as $paperLink) {
+                PaperLink::create([
+                    'book_id' => $book->id,
+                    'link' => $paperLink['link']
+                ]);
+            }
         }
 
-        foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
-            EbookLink::create([
-                'book_id' => $book->id,
-                'link' => $ebookLink['link']
-            ]);
+        if (isset($donneesValidees['ebookLinks'])) {
+            foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
+                EbookLink::create([
+                    'book_id' => $book->id,
+                    'link' => $ebookLink['link']
+                ]);
+            }
         }
 
         return response()->json($book, 201);
@@ -59,10 +63,8 @@ class BookController extends Controller
             'paperLinks' => 'array|nullable',
             'paperLinks.*.link' => 'string|min:5|max:255',
             'ebookLinks' => 'array|nullable',
-            'ebookLinks.*.link' => 'string|min:5|max:255'
+            'ebookLinks.*.link' => 'string|min:5|max:255',
         ]);
-        $bookId = $book->id;
-        $book = Book::findOrFail($bookId);
 
         $bookData = $donneesValidees;
         unset($bookData['paperLinks']);
@@ -71,19 +73,24 @@ class BookController extends Controller
         $book->update($bookData);
 
         PaperLink::where('book_id', $book->id)->delete();
-        foreach ($donneesValidees['paperLinks'] as $paperLink) {
-            PaperLink::create([
-                'book_id' => $book->id,
-                'link' => $paperLink['link']
-            ]);
+        EbookLink::where('book_id', $book->id)->delete();
+
+        if (isset($donneesValidees['paperLinks'])) {
+            foreach ($donneesValidees['paperLinks'] as $paperLink) {
+                PaperLink::create([
+                    'book_id' => $book->id,
+                    'link' => $paperLink['link']
+                ]);
+            }
         }
 
-        EbookLink::where('book_id', $book->id)->delete();
-        foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
-            EbookLink::create([
-                'book_id' => $book->id,
-                'link' => $ebookLink['link']
-            ]);
+        if (isset($donneesValidees['ebookLinks'])) {
+            foreach ($donneesValidees['ebookLinks'] as $ebookLink) {
+                EbookLink::create([
+                    'book_id' => $book->id,
+                    'link' => $ebookLink['link']
+                ]);
+            }
         }
 
         return response()->json($book, 200);

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
+use App\Http\Controllers\CitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,9 +43,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // partie admin avec son propre middleware
     Route::middleware('admin')->name('admin.')->prefix('admin')->group(function () {
+
         // routes pour les livres
         Route::post('books', [AdminBookController::class, 'store'])->name('books.store');
         Route::patch('books/{book}', [AdminBookController::class, 'update'])->name('books.update');
         Route::delete('books/{book}', [AdminBookController::class, 'destroy'])->name('books.destroy');
+
+        // routes pour les citations
+        Route::post('citations', [CitationController::class, 'store'])->name('citations.store');
+        Route::get('citations/{citation}', [CitationController::class, 'show'])->name('citations.show');
+        Route::patch('citations/{citation}', [CitationController::class, 'update'])->name('citations.update');
+        Route::delete('citations/{citation}', [CitationController::class, 'destroy'])->name('citations.destroy');
     });
 });
