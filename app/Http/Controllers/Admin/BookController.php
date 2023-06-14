@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Book;
+use App\Models\Category;
 use App\Models\EbookLink;
 use App\Models\PaperLink;
 use Illuminate\Http\Request;
+use App\Models\BookCategories;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 
@@ -23,13 +25,25 @@ class BookController extends Controller
             'paperLinks.*.link' => 'string|min:5|max:255',
             'ebookLinks' => 'array|nullable',
             'ebookLinks.*.link' => 'string|min:5|max:255',
+            'categories' => 'array|nullable',
+            'categories.*.id' => 'integer|exists:categories,id'
         ]);
-
         $bookData = $donneesValidees;
         unset($bookData['paperLinks']);
         unset($bookData['ebookLinks']);
+        unset($bookData['categories']);
 
         $book = Book::create($bookData);
+
+
+        if (isset($donneesValidees['categories'])) {
+            foreach ($donneesValidees['categories'] as $category) {
+                BookCategories::create([
+                    'book_id' => $book->id,
+                    'category_id' => $category['id']
+                ]);
+            }
+        }
 
         if (isset($donneesValidees['paperLinks'])) {
             foreach ($donneesValidees['paperLinks'] as $paperLink) {
@@ -64,16 +78,21 @@ class BookController extends Controller
             'paperLinks.*.link' => 'string|min:5|max:255',
             'ebookLinks' => 'array|nullable',
             'ebookLinks.*.link' => 'string|min:5|max:255',
+            'categories' => 'array|nullable',
+            'categories.*.id' => 'integer|exists:categories,id'
         ]);
 
         $bookData = $donneesValidees;
         unset($bookData['paperLinks']);
         unset($bookData['ebookLinks']);
+        unset($bookData['categories']);
 
         $book->update($bookData);
 
         PaperLink::where('book_id', $book->id)->delete();
         EbookLink::where('book_id', $book->id)->delete();
+        BookCategories::where('book_id', $book->id)->delete();
+
 
         if (isset($donneesValidees['paperLinks'])) {
             foreach ($donneesValidees['paperLinks'] as $paperLink) {
@@ -89,6 +108,15 @@ class BookController extends Controller
                 EbookLink::create([
                     'book_id' => $book->id,
                     'link' => $ebookLink['link']
+                ]);
+            }
+        }
+
+        if (isset($donneesValidees['categories'])) {
+            foreach ($donneesValidees['categories'] as $category) {
+                BookCategories::create([
+                    'book_id' => $book->id,
+                    'category_id' => $category['id']
                 ]);
             }
         }

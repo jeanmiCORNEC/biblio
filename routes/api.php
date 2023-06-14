@@ -5,8 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CitationController;
+use App\Http\Controllers\BookProposalController;
 use App\Http\Controllers\Admin\BookController as AdminBookController;
 
 /*
@@ -33,6 +35,11 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::get('posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('posts/{post}', [PostController::class, 'show'])->name('post.show');
 
+// route pour les citations
+Route::get('citations/{citation}', [CitationController::class, 'show'])->name('citations.show');
+
+
+
 
 // routes protégées
 Route::middleware('auth:sanctum')->group(function () {
@@ -47,6 +54,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
+    // route pour proposer un livre
+    Route::post('books/proposal', [BookProposalController::class, 'store'])->name('books.store');
+
+    // route pour la recherche
+    Route::post('search', [SearchController::class, 'search'])->name('search');
+
     // partie admin avec son propre middleware
     Route::middleware('admin')->name('admin.')->prefix('admin')->group(function () {
 
@@ -57,7 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // routes pour les citations
         Route::post('citations', [CitationController::class, 'store'])->name('citations.store');
-        Route::get('citations/{citation}', [CitationController::class, 'show'])->name('citations.show');
         Route::patch('citations/{citation}', [CitationController::class, 'update'])->name('citations.update');
         Route::delete('citations/{citation}', [CitationController::class, 'destroy'])->name('citations.destroy');
 

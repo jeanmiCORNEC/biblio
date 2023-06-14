@@ -19,7 +19,8 @@ class Book extends Model
         'cover_image',
         'isbn',
         'paperLinks',
-        'ebookLinks'
+        'ebookLinks',
+        'categories'
     ];
     protected $fillable = [
         'title',
@@ -28,7 +29,8 @@ class Book extends Model
         'cover_image',
         'isbn',
         'paperLinks',
-        'ebookLinks'
+        'ebookLinks',
+        'categories'
     ];
 
     public function paperLinks()
@@ -39,5 +41,10 @@ class Book extends Model
     public function ebookLinks()
     {
         return $this->hasMany(EbookLink::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'book_categories');
     }
 }
